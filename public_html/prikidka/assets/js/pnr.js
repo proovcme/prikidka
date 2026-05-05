@@ -54,10 +54,11 @@ function calculatePnr() {
     const automation = automationSelect ? automationSelect.value : 'basic';
 
     const systemCheckboxes = [
-        { id: 'pnr-electro', name: 'Электрика (ЭОМ)' },
-        { id: 'pnr-vent', name: 'Вентиляция и кондиционирование (ОВ)' },
-        { id: 'pnr-weak', name: 'Слаботочные системы и пожарная безопасность (СС и АПС)' },
-        { id: 'pnr-bms', name: 'Диспетчеризация и автоматика (АК / BMS)' },
+        { id: 'pnr-electro', name: 'Электрика (ЭОМ)', costPercent: 0.5, timeBase: 0.5 },
+        { id: 'pnr-vent', name: 'Вентиляция и кондиционирование (ОВ)', costPercent: 0.8, timeBase: 0.5 },
+        { id: 'pnr-weak', name: 'Слаботочные системы и пожарная безопасность (СС и АПС)', costPercent: 0.3, timeBase: 0.3 },
+        { id: 'pnr-bms', name: 'Диспетчеризация и автоматика (АК / BMS)', costPercent: 1.0, timeBase: 1.0 },
+        { id: 'pnr-smoke', name: 'Противодымная вентиляция и клапаны (ДУ)', costPercent: 0.5, timeBase: 0.5 },
     ];
 
     let totalCost = 0;
@@ -66,10 +67,12 @@ function calculatePnr() {
     systemCheckboxes.forEach(system => {
         const checkbox = document.getElementById(system.id);
         if (checkbox && checkbox.checked) {
-            const percent = getCostPercent(system.name);
+            // Используем значения из справочника, если есть, иначе из объекта
+            const percent = getCostPercent(system.name) || system.costPercent;
+            const time = getTimeBase(system.name) || system.timeBase;
+
             totalCost += (smrCost * percent) / 100;
 
-            const time = getTimeBase(system.name);
             if (time > maxTime) {
                 maxTime = time;
             }
@@ -98,4 +101,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pnr-vent').addEventListener('change', calculatePnr);
     document.getElementById('pnr-weak').addEventListener('change', calculatePnr);
     document.getElementById('pnr-bms').addEventListener('change', calculatePnr);
+    document.getElementById('pnr-smoke').addEventListener('change', calculatePnr);
 });

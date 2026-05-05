@@ -62,6 +62,7 @@ function calculateHeat() {
     const heatingResultElement = document.getElementById('heat-heating-result');
     const ventResultElement = document.getElementById('heat-vent-result');
     const totalResultElement = document.getElementById('heat-total-result');
+    const totalGcalElement = document.getElementById('heat-total-gcal');
 
     const objectTypeName = objectTypeSelect.value;
     const area = parseFloat(areaInput.value) || 0;
@@ -90,9 +91,15 @@ function calculateHeat() {
         totalPower *= 1.5;
     }
 
+    // Перевод в Гкал/ч: 1 Гкал/ч = 1163 кВт
+    const totalGcal = totalPower / 1163;
+
     heatingResultElement.textContent = heatingPower.toFixed(2) + ' кВт';
     ventResultElement.textContent = ventPower.toFixed(2) + ' кВт';
     totalResultElement.textContent = totalPower.toFixed(2) + ' кВт';
+    if (totalGcalElement) {
+        totalGcalElement.textContent = totalGcal.toFixed(4) + ' Гкал/ч';
+    }
 }
 
 // Инициализация при загрузке страницы

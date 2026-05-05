@@ -73,6 +73,20 @@ function populateSelects() {
     }
 }
 
+// Функция для получения коэффициента GLA по типу здания и классу
+function getGlaCoefficient(buildingTypeName, objectClass) {
+    // Склады: GLA = 95%
+    if (buildingTypeName && buildingTypeName.toLowerCase().includes('склад')) {
+        return 0.95;
+    }
+    // Эконом: GLA = 80%
+    if (objectClass === 'econom') {
+        return 0.80;
+    }
+    // Комфорт, Бизнес, Офисы: GLA = 70%
+    return 0.70;
+}
+
 // Функция для расчета стоимости по НЦС
 function calculateNcs() {
     const buildingTypeSelect = document.getElementById('ncs-building-type');
@@ -80,13 +94,19 @@ function calculateNcs() {
     const regionSelect = document.getElementById('ncs-region');
     const undergroundSelect = document.getElementById('ncs-underground');
     const classSelect = document.getElementById('ncs-class');
+    const soilSelect = document.getElementById('ncs-soil');
+    const ndsCheckbox = document.getElementById('ncs-nds');
     const resultElement = document.getElementById('ncs-result');
+    const sellableAreaElement = document.getElementById('cost-sellable-area');
 
     const pricePerSqm = parseFloat(buildingTypeSelect.value) || 0;
     const area = parseFloat(areaInput.value) || 0;
     const regionCoef = parseFloat(regionSelect.value) || 1;
     const underground = parseInt(undergroundSelect ? undergroundSelect.value : 0);
     const objectClass = classSelect ? classSelect.value : 'econom';
+    const soilType = soilSelect ? soilSelect.value : 'normal';
+    const includeNds = ndsCheckbox ? ndsCheckbox.checked : false;
+    const buildingTypeName = buildingTypeSelect.options[buildingTypeSelect.selectedIndex]?.text || '';
 
     // Базовая стоимость
     let totalCost = pricePerSqm * area * regionCoef;
@@ -105,7 +125,24 @@ function calculateNcs() {
         totalCost *= 1.4;
     }
 
+    // Грунтовые условия: сложные свайные +15%
+    if (soilType === 'difficult') {
+        totalCost *= 1.15;
+    }
+
+    // НДС 22%
+    if (includeNds) {
+        totalCost *= 1.22;
+    }
+
+    // Расчет GLA
+    const glaCoef = getGlaCoefficient(buildingTypeName, objectClass);
+    const sellableArea = Math.round(area * glaCoef);
+
     resultElement.textContent = formatCurrency(totalCost);
+    if (sellableAreaElement) {
+        sellableAreaElement.textContent = sellableArea.toLocaleString('ru-RU') + ' м²';
+    }
 }
 
 // Функция для расчета стоимости ПИР
@@ -113,15 +150,23 @@ function calculatePir() {
     const smrCostInput = document.getElementById('pir-smr-cost');
     const buildingTypeSelect = document.getElementById('pir-building-type');
     const percentInput = document.getElementById('pir-percent');
+    const ndsCheckbox = document.getElementById('ncs-nds');
     const resultElement = document.getElementById('pir-result');
 
     const smrCost = parseFloat(smrCostInput.value) || 0;
     const buildingTypePercent = parseFloat(buildingTypeSelect.value) || 0;
     const manualPercent = parseFloat(percentInput.value);
+    const includeNds = ndsCheckbox ? ndsCheckbox.checked : false;
 
     const finalPercent = manualPercent !== null && !isNaN(manualPercent) ? manualPercent : buildingTypePercent;
 
-    const pirCost = smrCost * (finalPercent / 100);
+    let pirCost = smrCost * (finalPercent / 100);
+
+    // НДС 22% для ПИР тоже
+    if (includeNds) {
+        pirCost *= 1.22;
+    }
+
     resultElement.textContent = formatCurrency(pirCost);
 }
 
@@ -161,6 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('ncs-region').addEventListener('change', calculateNcs);
     document.getElementById('ncs-underground').addEventListener('change', calculateNcs);
     document.getElementById('ncs-class').addEventListener('change', calculateNcs);
+    document.getElementById('ncs-soil').addEventListener('change', calculateNcs);
+    document.getElementById('ncs-nds').addEventListener('change', calculateNcs);
 
     // Обработчики событий для полей ввода ПИР
     document.getElementById('pir-smr-cost').addEventListener('input', calculatePir);

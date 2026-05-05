@@ -55,6 +55,8 @@ function calculateWater() {
     const sprinklerCheckbox = document.getElementById('water-sprinkler');
     const dailyResultElement = document.getElementById('water-daily-result');
     const hourlyResultElement = document.getElementById('water-hourly-result');
+    const fireTanksBlock = document.getElementById('water-fire-tanks');
+    const tanksVolElement = document.getElementById('water-tanks-vol');
 
     const objectTypeName = objectTypeSelect.value;
     const users = parseFloat(usersInput.value) || 0;
@@ -82,6 +84,19 @@ function calculateWater() {
 
     dailyResultElement.textContent = dailyConsumption.toFixed(2) + ' м³/сут';
     hourlyResultElement.textContent = hourlyConsumption.toFixed(2) + ' м³/час';
+
+    // Пожарные резервуары: если ВПВ или АУПТ включены
+    if (hasFirePipe || hasSprinkler) {
+        let fireFlow = 0;
+        if (hasFirePipe) fireFlow += 5;
+        if (hasSprinkler) fireFlow += 30;
+        const tanksVolume = fireFlow * 3; // запас на 3 часа
+
+        if (fireTanksBlock) fireTanksBlock.style.display = 'block';
+        if (tanksVolElement) tanksVolElement.textContent = tanksVolume.toFixed(0);
+    } else {
+        if (fireTanksBlock) fireTanksBlock.style.display = 'none';
+    }
 }
 
 // Инициализация при загрузке страницы

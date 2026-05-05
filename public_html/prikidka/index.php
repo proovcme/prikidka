@@ -107,9 +107,28 @@ include '../header.php';
                             <option value="business">Бизнес</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="ncs-soil">Грунтовые условия:</label>
+                        <select id="ncs-soil">
+                            <option value="normal">Нормальные</option>
+                            <option value="difficult">Сложные свайные</option>
+                        </select>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="ncs-nds">
+                        <label for="ncs-nds">Включая НДС 22%</label>
+                    </div>
                     <div class="result-block">
                         <div class="result-label">Итоговая стоимость СМР:</div>
                         <div class="result-value" id="ncs-result">0 ₽</div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-label">Продаваемая/Арендуемая площадь (GLA):</div>
+                        <div class="result-value" id="cost-sellable-area">0 м²</div>
+                    </div>
+                    <div class="content-block block-warn">
+                        <div class="content-block-header"><span class="cli-only">[WARN]</span> ВАЖНО</div>
+                        <p>В стоимость СМР не включена плата за технологическое присоединение (ТП) к городским сетям.</p>
                     </div>
                 </div>
             </div>
@@ -192,6 +211,10 @@ include '../header.php';
                     <label for="electro-em-charging">Машиномест с зарядкой ЭМ (шт):</label>
                     <input type="number" id="electro-em-charging" placeholder="Например: 10" min="0" value="0">
                 </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="electro-smoke">
+                    <label for="electro-smoke">Системы противодымной защиты (ДУ)</label>
+                </div>
                 <div class="result-block">
                     <div class="result-label">Расчетная мощность (Рр), кВт:</div>
                     <div class="result-value" id="electro-calculated-power">0.00 кВт</div>
@@ -199,6 +222,10 @@ include '../header.php';
                 <div class="result-block">
                     <div class="result-label">Установленная мощность (Ру), кВт:</div>
                     <div class="result-value" id="electro-installed-power">0.00 кВт</div>
+                </div>
+                <div class="result-block">
+                    <div class="result-label">Мощность трансформатора (S):</div>
+                    <div class="result-value" id="electro-total-kva">0.00 кВА</div>
                 </div>
             </div>
         </div>
@@ -245,6 +272,10 @@ include '../header.php';
                     <div class="result-label">Итоговая тепловая нагрузка, кВт:</div>
                     <div class="result-value" id="heat-total-result">0.00 кВт</div>
                 </div>
+                <div class="result-block">
+                    <div class="result-label">Нагрузка для получения ТУ:</div>
+                    <div class="result-value" id="heat-total-gcal">0.0000 Гкал/ч</div>
+                </div>
             </div>
         </div>
 
@@ -285,6 +316,10 @@ include '../header.php';
                 <div class="result-block">
                     <div class="result-label">Максимальный часовой расход, м³/час:</div>
                     <div class="result-value" id="water-hourly-result">0.00 м³/час</div>
+                </div>
+                <div id="water-fire-tanks" style="display: none; margin-top: 16px;" class="content-block block-warn">
+                    <div class="content-block-header"><span class="cli-only">[WARN]</span> Пожарные резервуары</div>
+                    <p>Ориентировочный объем баков: <span id="water-tanks-vol">0</span> м³ (запас на 3 часа работы).</p>
                 </div>
             </div>
         </div>
@@ -377,6 +412,10 @@ include '../header.php';
                     <div class="checkbox-group">
                         <input type="checkbox" id="pnr-bms" value="Диспетчеризация и автоматика (АК / BMS)">
                         <label for="pnr-bms">Автоматизация и диспетчеризация (BMS)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="pnr-smoke" value="Противодымная вентиляция и клапаны (ДУ)">
+                        <label for="pnr-smoke">Противодымная вентиляция и клапаны (ДУ)</label>
                     </div>
                 </div>
                 <div class="result-block">

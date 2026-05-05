@@ -60,14 +60,17 @@ function calculateElectroPower() {
     const additionalEqInput = document.getElementById('electro-additional-eq');
     const cookingTypeSelect = document.getElementById('electro-cooking-type');
     const emChargingInput = document.getElementById('electro-em-charging');
+    const smokeCheckbox = document.getElementById('electro-smoke');
     const calculatedPowerElement = document.getElementById('electro-calculated-power');
     const installedPowerElement = document.getElementById('electro-installed-power');
+    const totalKvaElement = document.getElementById('electro-total-kva');
 
     const objectTypeName = objectTypeSelect.value;
     const area = parseFloat(areaInput.value) || 0;
     const additionalEq = parseFloat(additionalEqInput.value) || 0;
     const cookingType = cookingTypeSelect ? cookingTypeSelect.value : 'gas';
     const emCharging = parseFloat(emChargingInput.value) || 0;
+    const hasSmoke = smokeCheckbox ? smokeCheckbox.checked : false;
 
     const specificLoad = getSpecificLoad(objectTypeName);
     const demandFactor = getDemandFactor(objectTypeName);
@@ -84,10 +87,21 @@ function calculateElectroPower() {
     installedPower += emCharging * 7;
 
     // Расчетная мощность
-    const calculatedPower = (installedPower - additionalEq) * demandFactor + additionalEq;
+    let calculatedPower = (installedPower - additionalEq) * demandFactor + additionalEq;
+
+    // Если ДУ включен — +15% к итоговой активной мощности
+    if (hasSmoke) {
+        calculatedPower *= 1.15;
+    }
+
+    // Полная мощность трансформатора: S = P / 0.85
+    const totalKva = calculatedPower / 0.85;
 
     installedPowerElement.textContent = installedPower.toFixed(2) + ' кВт';
     calculatedPowerElement.textContent = calculatedPower.toFixed(2) + ' кВт';
+    if (totalKvaElement) {
+        totalKvaElement.textContent = totalKva.toFixed(2) + ' кВА';
+    }
 }
 
 // Инициализация при загрузке страницы
@@ -99,4 +113,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('electro-additional-eq').addEventListener('input', calculateElectroPower);
     document.getElementById('electro-cooking-type').addEventListener('change', calculateElectroPower);
     document.getElementById('electro-em-charging').addEventListener('input', calculateElectroPower);
+    document.getElementById('electro-smoke').addEventListener('change', calculateElectroPower);
 });
