@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ПИР Калькулятор | toc.chernetchenko.pro</title>
+    <script src="frappe-gantt.min.js"></script>
+    <link rel="stylesheet" href="frappe-gantt.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">TOC.CHERNETCHENKO.PRO</a>
+        <div style="display: flex; align-items: center;">
+            <a href="index.html">Манифест</a>
+            <a href="toc.html">О Теории ограничений</a>
+            <a href="iona.html">Голдратт</a>
+            <a href="calc.html" class="active">ПИР Калькулятор</a>
+            <a href="poreshal.html" style="color: var(--red); border: 1px dashed var(--red); padding: 4px 8px; border-radius: 3px; font-size: 11px; margin-left: 15px; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7" title="Генератор заградительных КП">☠️ ПОРЕШАТЬ</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 24px; color: var(--navy);">Оценка и Планирование ПИР</h1>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn" id="btn-reset-all" style="background: var(--red); color: #fff;">🗑 Сброс проекта</button>
+            </div>
+        </header>
+
+        <section class="section">
+            <h3 class="section-title">01 - Реквизиты проекта (для КП)</h3>
+            <div class="section-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="input-group"><label>Заказчик <span class="sub-label">(Компания)</span></label><input type="text" id="req_client" class="std-input" placeholder="ООО «Ромашка»"></div>
+                    <div class="input-group"><label>Объект <span class="sub-label">(Название/Адрес)</span></label><input type="text" id="req_object" class="std-input" placeholder="Жилой комплекс..."></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group"><label>№ КП <span class="sub-label">(Номер)</span></label><input type="text" id="req_num" class="std-input" placeholder="КП-01/26"></div>
+                    <div class="input-group"><label>Дата <span class="sub-label">(Составления)</span></label><input type="date" id="req_date" class="std-input"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" style="border-left: 4px solid var(--orange);">
+            <h3 class="section-title">01.5 - Комплектность исходных данных</h3>
+            <div class="section-body">
+                <p style="font-size: 12px; color: var(--muted); margin-top: 0; margin-bottom: 15px;">Отметьте статусы документов. Если критичного документа нет, система предложит занести это в риски проекта.</p>
+                <div class="data-checklist" id="initial-data-grid"></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h3 class="section-title">02 - Состав работ и Экспертиза</h3>
+            <div class="section-body">
+                
+                <div style="background: #e8f4ec; padding: 12px 15px; border-radius: 4px; border: 1px solid var(--green); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
+                        <input type="checkbox" id="exp-checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: var(--green); cursor: pointer; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column;">
+                            <label for="exp-checkbox" style="cursor: pointer; color: var(--navy); font-size: 13px; font-weight: bold; margin: 0; line-height: 1.2;">Прохождение экспертизы</label>
+                            <span style="font-size: 10px; color: #999; line-height: 1.2; margin-top: 2px;">Учитывается в Доп. расходах</span>
+                        </div>
+                    </div>
+                    <select id="exp-type" class="std-select" style="display: none; width: 180px; flex-shrink: 0;">
+                        <option value="gge">Главгосэкспертиза (ГГЭ)</option>
+                        <option value="gos">Госэкспертиза (Регион)</option>
+                        <option value="private">Частная экспертиза</option>
+                    </select>
+                    <div id="exp-val-wrapper" style="display: none; border: 1px solid #ccc; border-radius: 3px; overflow: hidden; background: #fff; flex-shrink: 0;">
+                        <input type="number" id="exp-value" value="20" style="width: 70px; padding: 6px; border: none; text-align: center; outline: none;">
+                        <select id="exp-calc-type" style="padding: 6px; border: none; border-left: 1px solid #eee; background: #f9f9f9; outline: none; cursor: pointer;"><option value="pct">%</option><option value="fix">₽</option></select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <button class="btn btn-outline stage-btn active" data-stage="П" style="background: var(--green); color: #fff; border-color: var(--green);">Стадия П (Пост. 87)</button>
+                    <button class="btn btn-outline stage-btn" data-stage="Р">Стадия Р (ГОСТ 21)</button>
+                    <button class="btn btn-outline stage-btn" data-stage="И">Изыскания</button>
+                    <button class="btn btn-outline stage-btn" data-stage="ЭС">Эскиз / АГР</button>
+                    <button class="btn btn-outline stage-btn" data-stage="ТИМ">ТИМ / Scan-to-BIM</button>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div id="tim-modifiers" style="display: none; align-items: center; gap: 10px; background: #e8f4ec; padding: 6px 12px; border-radius: 3px; border: 1px solid var(--green);">
+                        <span style="font-size: 12px; font-weight: bold; color: var(--green);">LOD:</span>
+                        <label style="font-size: 12px; cursor: pointer;"><input type="radio" name="tim_lod" value="1" checked> 300 (x1.0)</label>
+                        <label style="font-size: 12px; cursor: pointer;"><input type="radio" name="tim_lod" value="1.2"> 400/500 (x1.2)</label>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-left: auto;">
+                        <button id="btn-sel-all" class="btn btn-outline">Выбрать все</button>
+                        <button id="btn-desel-all" class="btn btn-outline">Снять выбор</button>
+                    </div>
+                </div>
+
+                <div id="sections-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; margin-bottom: 20px;"></div>
+
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; border: 1px solid #eee; display: flex; gap: 15px; align-items: flex-end;">
+                    <div class="input-group" style="width: 100px;"><label>Свой раздел</label><input type="text" id="manual-sec-code" class="std-input" placeholder="Шифр"></div>
+                    <div class="input-group" style="flex: 1;"><label>Наименование раздела</label><input type="text" id="manual-sec-name" class="std-input" placeholder="Введите название..."></div>
+                    <button id="btn-add-manual-sec" class="btn btn-outline" style="height: 35px; border-color: var(--green); color: var(--green); font-weight: bold;">+ Добавить</button>
+                </div>
+                
+                <div style="border-top: 1px solid #eee; margin-top: 20px; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <button class="btn btn-dark" id="btn-sync-tasks">Перенести выбранные разделы в график ↓</button>
+                    <div class="csv-panel">
+                        <span style="font-size: 11px; font-weight: bold; color: var(--muted); margin-right: 5px;">РАЗДЕЛЫ (CSV):</span>
+                        <button id="btn-tpl-sec" class="btn btn-outline" style="padding: 4px 8px;">📄 Шаблон</button>
+                        <button id="btn-export-sec" class="btn btn-outline" style="padding: 4px 8px;">📤 Экспорт</button>
+                        <label class="btn btn-outline" style="margin: 0; padding: 4px 8px; cursor: pointer;">📥 Импорт<input type="file" id="csv-import-sec" accept=".csv" style="display: none;"></label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h3 class="section-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span>03 - Календарный график и Ресурсы (ТОС)</span>
+                    <div class="csv-panel" style="padding: 4px 10px;">
+                        <span style="font-size: 10px; color: var(--muted);">ГРАФИК (CSV):</span>
+                        <button id="btn-tpl-tasks" class="btn btn-outline" style="padding: 3px 6px; font-size: 10px;">📄 Шаблон</button>
+                        <button id="btn-export-tasks" class="btn btn-outline" style="padding: 3px 6px; font-size: 10px;">📤 Экспорт</button>
+                        <label class="btn btn-outline" style="margin: 0; padding: 3px 6px; font-size: 10px; cursor: pointer;">📥 Импорт<input type="file" id="csv-import-tasks" accept=".csv" style="display: none;"></label>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button id="btn-toggle-mgmt" class="btn btn-outline" style="background: var(--green); color: #fff; border: none;">УП</button>
+                    <button id="btn-add-milestone" class="btn btn-outline" style="background: var(--red); color: #fff; border: none;">+ Веха</button>
+                    <button id="btn-add-task" class="btn btn-outline" style="background: var(--navy); color: #fff; border: none;">+ Задача</button>
+                </div>
+            </h3>
+            <div class="section-body" style="padding: 10px;">
+                <div style="overflow-x: auto; margin-bottom: 15px; border: 1px solid var(--navy); border-radius: 4px;">
+                    <table class="res-table">
+                        <thead style="background: #e6dac3; border-bottom: 2px solid var(--navy);">
+                            <tr>
+                                <th rowspan="2" style="width: 40px; border-bottom: 1px solid var(--navy);">№</th>
+                                <th rowspan="2" style="text-align: left; border-bottom: 1px solid var(--navy);">Наименование задачи</th>
+                                <th rowspan="2" style="width: 120px; border-bottom: 1px solid var(--navy);">Предшественник</th>
+                                <th colspan="2" style="border-bottom: 1px solid #ccc;">Ресурсы</th>
+                                <th rowspan="2" style="width: 100px; border-bottom: 1px solid var(--navy);">Начало</th>
+                                <th rowspan="2" style="width: 100px; border-bottom: 1px solid var(--navy);">Конец</th>
+                                <th rowspan="2" style="width: 50px; border-bottom: 1px solid var(--navy);">Дни</th>
+                                <th rowspan="2" style="width: 90px; border-bottom: 1px solid var(--navy); text-align: right;">ФОТ, ₽</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 130px; font-size: 10px; border-bottom: 1px solid var(--navy);">Исполнители</th>
+                                <th style="width: 60px; font-size: 10px; border-bottom: 1px solid var(--navy);">%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-table-body"></tbody>
+                    </table>
+                </div>
+                <div id="gantt-container" style="border: 1px solid var(--navy); border-radius: 4px; min-height: 200px;"></div>
+
+                <div style="margin-top: 20px; border: 1px solid var(--navy); border-left: 4px solid var(--gold); border-radius: 4px; padding: 15px; background: #fff;">
+                    <div style="font-weight: bold; color: var(--navy); margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">🤖 Спросить Иону (Аудит графика по ТОС)</div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="iona-input-gantt" class="std-input" placeholder="Вопрос по перегрузам..." style="flex: 1;">
+                        <button onclick="askIona('gantt')" id="btn-iona-gantt" class="btn btn-dark">Анализировать график</button>
+                    </div>
+                    <div id="iona-response-gantt" style="display: none; background: #f9f9f9; border: 1px dashed #ccc; padding: 15px; border-radius: 4px; font-size: 13px; line-height: 1.5; color: #333;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" style="border-left: 4px solid var(--red);">
+            <h3 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>04.5 - Матрица рисков и Финансовый резерв</span>
+                <button id="btn-add-risk" class="btn btn-outline" style="border-color: var(--red); color: var(--red);">+ Добавить риск</button>
+            </h3>
+            <div class="section-body">
+                <div class="risk-matrix-container">
+                    <div style="flex: 1; overflow-x: auto;">
+                        <table class="res-table" id="risks-table">
+                            <thead style="background: #f9f9f9;">
+                                <tr>
+                                    <th style="width: 40%;">Угроза</th>
+                                    <th style="width: 15%;">Вер. (1-3)</th>
+                                    <th style="width: 15%;">Вл. (1-3)</th>
+                                    <th style="width: 20%;">Ущерб, ₽</th>
+                                    <th style="width: 10%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="risks-tbody"></tbody>
+                        </table>
+                    </div>
+                    <div class="risk-matrix" id="risk-matrix-viz">
+                        <div class="rm-label-y">Вероятность</div>
+                        <div class="rm-cell rm-yellow" id="rm-3-1">0</div><div class="rm-cell rm-red" id="rm-3-2">0</div><div class="rm-cell rm-red" id="rm-3-3">0</div>
+                        <div class="rm-cell rm-green" id="rm-2-1">0</div><div class="rm-cell rm-yellow" id="rm-2-2">0</div><div class="rm-cell rm-red" id="rm-2-3">0</div>
+                        <div class="rm-cell rm-green" id="rm-1-1">0</div><div class="rm-cell rm-green" id="rm-1-2">0</div><div class="rm-cell rm-yellow" id="rm-1-3">0</div>
+                        <div class="rm-label-x">Влияние</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" style="border: none; background: var(--green); color: #fff; border-radius: 4px; overflow: hidden; margin-bottom: 20px;">
+            <div style="padding: 25px;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; margin-bottom: 20px;">
+                    <div><div style="font-size: 11px; opacity: 0.8;">ФОТ СЕБЕСТОИМОСТЬ</div><div style="font-size: 28px; font-weight: bold;"><span id="res_fot">0</span> ₽</div></div>
+                    <div><div style="font-size: 11px; opacity: 0.8;">С КОЭФФ. (ФОТ+ТОС)</div><div style="font-size: 28px; font-weight: bold;"><span id="res_coeffs">0</span> ₽</div></div>
+                    <div><div style="font-size: 11px; opacity: 0.8;">ДОП. РАСХОДЫ</div><div style="font-size: 28px; font-weight: bold;"><span id="res_extra">0</span> ₽</div></div>
+                </div>
+                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.15); margin: 0 0 20px 0;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center; margin-bottom: 20px;">
+                    <div><div style="font-size: 11px; opacity: 0.8;">УПРАВЛЕНИЕ %</div><div style="font-size: 28px; font-weight: bold;"><span id="res_mgmt">0</span> ₽</div></div>
+                    <div style="color: #ffbaba;"><div style="font-size: 11px; opacity: 0.8;">ФОНД РИСКОВ</div><div style="font-size: 28px; font-weight: bold;"><span id="res_risk_fund">0</span> ₽</div></div>
+                    <div><div style="font-size: 11px; opacity: 0.8;">МАРЖА %</div><div style="font-size: 28px; font-weight: bold;"><span id="res_margin">0</span> ₽</div></div>
+                    <div><div style="font-size: 11px; opacity: 0.8;">ИТОГО БЕЗ НДС</div><div style="font-size: 28px; font-weight: bold; color: #f5c842;"><span id="res_total_no_vat">0</span> ₽</div></div>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button class="btn btn-primary">📥 Скачать расчёт</button>
+                    <button class="btn" style="border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); color: #fff;">📄 Скачать КП</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="csv-manager.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
