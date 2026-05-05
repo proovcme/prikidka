@@ -215,6 +215,21 @@ include '../header.php';
                     <input type="checkbox" id="electro-smoke">
                     <label for="electro-smoke">Системы противодымной защиты (ДУ)</label>
                 </div>
+                <div class="form-group">
+                    <label for="electro-reliability">Категория надежности:</label>
+                    <select id="electro-reliability">
+                        <option value="3">III категория</option>
+                        <option value="2">II категория</option>
+                        <option value="1">I категория + ДГУ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="electro-vent-type">Тип вентиляции:</label>
+                    <select id="electro-vent-type">
+                        <option value="cav">Стандартная CAV</option>
+                        <option value="vav">Энергоэффективная VAV</option>
+                    </select>
+                </div>
                 <div class="result-block">
                     <div class="result-label">Расчетная мощность (Рр), кВт:</div>
                     <div class="result-value" id="electro-calculated-power">0.00 кВт</div>
@@ -226,6 +241,10 @@ include '../header.php';
                 <div class="result-block">
                     <div class="result-label">Мощность трансформатора (S):</div>
                     <div class="result-value" id="electro-total-kva">0.00 кВА</div>
+                </div>
+                <div id="electro-dgu-block" style="display: none; margin-top: 16px;" class="content-block block-info">
+                    <div class="content-block-header"><span class="cli-only">[INFO]</span> Дизель-генераторная установка</div>
+                    <p>Требуемая мощность ДГУ: <span id="electro-dgu-power">0.00</span> кВА (20% от полной мощности здания)</p>
                 </div>
             </div>
         </div>
@@ -259,6 +278,18 @@ include '../header.php';
                         <option value="50">Панорама 50%</option>
                         <option value="80">Сплошное 80%</option>
                     </select>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="heat-beams">
+                    <label for="heat-beams">Климатические балки (активные)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="heat-recovery">
+                    <label for="heat-recovery">Рекуперация (КПД 65%)</label>
+                </div>
+                <div class="form-group">
+                    <label for="heat-floors">Количество этажей:</label>
+                    <input type="number" id="heat-floors" placeholder="Например: 10" min="1" value="10">
                 </div>
                 <div class="result-block">
                     <div class="result-label">Нагрузка на отопление, кВт:</div>
@@ -308,6 +339,10 @@ include '../header.php';
                 <div class="checkbox-group">
                     <input type="checkbox" id="water-sprinkler">
                     <label for="water-sprinkler">Спринклерное тушение (АУПТ)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="water-reserve">
+                    <label for="water-reserve">Резерв питьевой воды</label>
                 </div>
                 <div class="result-block">
                     <div class="result-label">Суточный расход, м³/сут:</div>
@@ -392,7 +427,8 @@ include '../header.php';
                     <label for="pnr-automation">Сложность автоматизации:</label>
                     <select id="pnr-automation">
                         <option value="basic">Базовая</option>
-                        <option value="smart">Умное здание</option>
+                        <option value="ems">Продвинутая (EMS)</option>
+                        <option value="bms">Полная (BMS)</option>
                     </select>
                 </div>
                 <div class="form-group">

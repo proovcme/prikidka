@@ -59,6 +59,9 @@ function calculateHeat() {
     const areaInput = document.getElementById('heat-area');
     const ceilingHeightInput = document.getElementById('heat-ceiling-height');
     const glazingSelect = document.getElementById('heat-glazing');
+    const beamsCheckbox = document.getElementById('heat-beams');
+    const recoveryCheckbox = document.getElementById('heat-recovery');
+    const floorsInput = document.getElementById('heat-floors');
     const heatingResultElement = document.getElementById('heat-heating-result');
     const ventResultElement = document.getElementById('heat-vent-result');
     const totalResultElement = document.getElementById('heat-total-result');
@@ -68,6 +71,9 @@ function calculateHeat() {
     const area = parseFloat(areaInput.value) || 0;
     const ceilingHeight = parseFloat(ceilingHeightInput.value) || 3;
     const glazingPercent = parseFloat(glazingSelect ? glazingSelect.value : 20);
+    const hasBeams = beamsCheckbox ? beamsCheckbox.checked : false;
+    const hasRecovery = recoveryCheckbox ? recoveryCheckbox.checked : false;
+    const floors = parseInt(floorsInput ? floorsInput.value : 10);
 
     const heatingLoadPerSqm = getHeatingLoad(objectTypeName);
     const ventLoadPerSqm = getVentLoad(objectTypeName);
@@ -81,6 +87,16 @@ function calculateHeat() {
     heatingPower *= heightCoef;
     ventPower *= heightCoef;
 
+    // Рекуперация: снижает нагрузку на нагрев приточного воздуха на 60%
+    if (hasRecovery) {
+        ventPower *= 0.4;
+    }
+
+    // ГВС: +30% к нагрузке на нагрев воды (потери на циркуляцию по АВОК)
+    // Применяем к отопительной нагрузке как дополнительную
+    const gvsLoss = heatingPower * 0.3;
+    heatingPower += gvsLoss;
+
     // Итоговая тепловая нагрузка
     let totalPower = heatingPower + ventPower;
 
@@ -91,8 +107,14 @@ function calculateHeat() {
         totalPower *= 1.5;
     }
 
-    // Перевод в Гкал/ч: 1 Гкал/ч = 1163 кВт
-    const totalGcal = totalPower / 1163;
+    // Высотное здание (>16 этажей или >50м): +15% к стоимости сетей
+    // Здесь учитываем в итоговой нагрузке как запас
+    if (floors > 16) {
+        totalPower *= 1.15;
+    }
+
+    // Перевод в Гкал/ч: 1 кВт = 0.00086 Гкал/ч
+    const totalGcal = totalPower * 0.00086;
 
     heatingResultElement.textContent = heatingPower.toFixed(2) + ' кВт';
     ventResultElement.textContent = ventPower.toFixed(2) + ' кВт';
@@ -110,4 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('heat-area').addEventListener('input', calculateHeat);
     document.getElementById('heat-ceiling-height').addEventListener('input', calculateHeat);
     document.getElementById('heat-glazing').addEventListener('change', calculateHeat);
+    document.getElementById('heat-beams').addEventListener('change', calculateHeat);
+    document.getElementById('heat-recovery').addEventListener('change', calculateHeat);
+    document.getElementById('heat-floors').addEventListener('input', calculateHeat);
 });

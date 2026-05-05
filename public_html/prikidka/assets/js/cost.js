@@ -79,11 +79,23 @@ function getGlaCoefficient(buildingTypeName, objectClass) {
     if (buildingTypeName && buildingTypeName.toLowerCase().includes('склад')) {
         return 0.95;
     }
-    // Эконом: GLA = 80%
-    if (objectClass === 'econom') {
-        return 0.80;
+    // Жилье: GLA = 75%
+    if (buildingTypeName && buildingTypeName.toLowerCase().includes('жил')) {
+        return 0.75;
     }
-    // Комфорт, Бизнес, Офисы: GLA = 70%
+    // Офисы/Бизнес-центры: GLA = 65% (из-за лифтовых холлов и вентшахт по АВОК)
+    if (buildingTypeName && (buildingTypeName.toLowerCase().includes('офис') || buildingTypeName.toLowerCase().includes('бизнес'))) {
+        return 0.65;
+    }
+    // По умолчанию для офисов/бизнеса
+    if (objectClass === 'business') {
+        return 0.65;
+    }
+    // Эконом: 75%
+    if (objectClass === 'econom') {
+        return 0.75;
+    }
+    // Комфорт: 70%
     return 0.70;
 }
 
@@ -125,9 +137,9 @@ function calculateNcs() {
         totalCost *= 1.4;
     }
 
-    // Грунтовые условия: сложные свайные +15%
+    // Грунтовые условия: сложные свайные +20%
     if (soilType === 'difficult') {
-        totalCost *= 1.15;
+        totalCost *= 1.2;
     }
 
     // НДС 22%

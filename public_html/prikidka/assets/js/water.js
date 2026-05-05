@@ -53,6 +53,7 @@ function calculateWater() {
     const inequalityCoefInput = document.getElementById('water-inequality-coef');
     const firePipeCheckbox = document.getElementById('water-fire-pipe');
     const sprinklerCheckbox = document.getElementById('water-sprinkler');
+    const reserveCheckbox = document.getElementById('water-reserve');
     const dailyResultElement = document.getElementById('water-daily-result');
     const hourlyResultElement = document.getElementById('water-hourly-result');
     const fireTanksBlock = document.getElementById('water-fire-tanks');
@@ -63,6 +64,7 @@ function calculateWater() {
     const inequalityCoef = parseFloat(inequalityCoefInput.value) || 1;
     const hasFirePipe = firePipeCheckbox ? firePipeCheckbox.checked : false;
     const hasSprinkler = sprinklerCheckbox ? sprinklerCheckbox.checked : false;
+    const hasReserve = reserveCheckbox ? reserveCheckbox.checked : false;
 
     const dailyRatePerPerson = getDailyRate(objectTypeName);
 
@@ -90,7 +92,12 @@ function calculateWater() {
         let fireFlow = 0;
         if (hasFirePipe) fireFlow += 5;
         if (hasSprinkler) fireFlow += 30;
-        const tanksVolume = fireFlow * 3; // запас на 3 часа
+        let tanksVolume = fireFlow * 3; // запас на 3 часа
+
+        // Резерв питьевой воды: прибавляем суточный расход
+        if (hasReserve) {
+            tanksVolume += dailyConsumption;
+        }
 
         if (fireTanksBlock) fireTanksBlock.style.display = 'block';
         if (tanksVolElement) tanksVolElement.textContent = tanksVolume.toFixed(0);
@@ -108,4 +115,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('water-inequality-coef').addEventListener('input', calculateWater);
     document.getElementById('water-fire-pipe').addEventListener('change', calculateWater);
     document.getElementById('water-sprinkler').addEventListener('change', calculateWater);
+    document.getElementById('water-reserve').addEventListener('change', calculateWater);
 });

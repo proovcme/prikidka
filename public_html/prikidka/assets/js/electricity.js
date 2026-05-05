@@ -61,9 +61,13 @@ function calculateElectroPower() {
     const cookingTypeSelect = document.getElementById('electro-cooking-type');
     const emChargingInput = document.getElementById('electro-em-charging');
     const smokeCheckbox = document.getElementById('electro-smoke');
+    const reliabilitySelect = document.getElementById('electro-reliability');
+    const ventTypeSelect = document.getElementById('electro-vent-type');
     const calculatedPowerElement = document.getElementById('electro-calculated-power');
     const installedPowerElement = document.getElementById('electro-installed-power');
     const totalKvaElement = document.getElementById('electro-total-kva');
+    const dguBlock = document.getElementById('electro-dgu-block');
+    const dguPowerElement = document.getElementById('electro-dgu-power');
 
     const objectTypeName = objectTypeSelect.value;
     const area = parseFloat(areaInput.value) || 0;
@@ -71,6 +75,8 @@ function calculateElectroPower() {
     const cookingType = cookingTypeSelect ? cookingTypeSelect.value : 'gas';
     const emCharging = parseFloat(emChargingInput.value) || 0;
     const hasSmoke = smokeCheckbox ? smokeCheckbox.checked : false;
+    const reliability = reliabilitySelect ? reliabilitySelect.value : '3';
+    const ventType = ventTypeSelect ? ventTypeSelect.value : 'cav';
 
     const specificLoad = getSpecificLoad(objectTypeName);
     const demandFactor = getDemandFactor(objectTypeName);
@@ -94,6 +100,11 @@ function calculateElectroPower() {
         calculatedPower *= 1.15;
     }
 
+    // VAV-система: снижает нагрузку на вентиляторы на 30%
+    if (ventType === 'vav') {
+        calculatedPower *= 0.7;
+    }
+
     // Полная мощность трансформатора: S = P / 0.85
     const totalKva = calculatedPower / 0.85;
 
@@ -101,6 +112,15 @@ function calculateElectroPower() {
     calculatedPowerElement.textContent = calculatedPower.toFixed(2) + ' кВт';
     if (totalKvaElement) {
         totalKvaElement.textContent = totalKva.toFixed(2) + ' кВА';
+    }
+
+    // ДГУ: I категория — показываем блок с мощностью ДГУ (20% от полной мощности)
+    if (reliability === '1') {
+        const dguPower = totalKva * 0.2;
+        if (dguBlock) dguBlock.style.display = 'block';
+        if (dguPowerElement) dguPowerElement.textContent = dguPower.toFixed(2);
+    } else {
+        if (dguBlock) dguBlock.style.display = 'none';
     }
 }
 
@@ -114,4 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('electro-cooking-type').addEventListener('change', calculateElectroPower);
     document.getElementById('electro-em-charging').addEventListener('input', calculateElectroPower);
     document.getElementById('electro-smoke').addEventListener('change', calculateElectroPower);
+    document.getElementById('electro-reliability').addEventListener('change', calculateElectroPower);
+    document.getElementById('electro-vent-type').addEventListener('change', calculateElectroPower);
 });

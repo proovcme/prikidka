@@ -110,6 +110,13 @@ function calculateTimeline() {
         buildTime += 3;
     }
 
+    // Высотное здание (>75м): +4 мес к ПИР, +6 мес к СМР
+    // Определяем по площади (условно > 30000 м² для высоток)
+    if (area > 30000) {
+        designTime += 4;
+        buildTime += 6;
+    }
+
     // Экспертиза
     const expertiseTime = hasExpertise ? 1.5 : 0;
 

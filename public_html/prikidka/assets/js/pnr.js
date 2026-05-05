@@ -79,10 +79,16 @@ function calculatePnr() {
         }
     });
 
-    // Умное здание: бюджет и сроки * 1.5
-    if (automation === 'smart') {
+    // Уровни сложности автоматизации:
+    // basic — базовая (×1)
+    // ems — продвинутая EMS (×1.5 стоимость, +1 мес)
+    // bms — полная BMS (×2.5 стоимости, +2 мес)
+    if (automation === 'ems') {
         totalCost *= 1.5;
-        maxTime *= 1.5;
+        maxTime += 1;
+    } else if (automation === 'bms') {
+        totalCost *= 2.5;
+        maxTime += 2;
     }
 
     const finalTime = maxTime > 0 ? maxTime + 0.5 : 0;
