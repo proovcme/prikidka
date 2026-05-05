@@ -138,10 +138,17 @@ include 'header.php';
 
     <!-- 3. CTA / CALCULATOR -->
     <section class="section-wrap" id="calc">
-        <div class="cta-box">
-            <h3>🧮 ПИР-калькулятор v2.0</h3>
-            <p>Рассчитай стоимость проекта, построй ресурсный график и найди точку безубыточности за 5 минут.</p>
-            <a href="/calc" class="btn-primary">Перейти к расчетам →</a>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+            <div class="cta-box">
+                <h3>🧮 ПИР-калькулятор v2.0</h3>
+                <p>Рассчитай стоимость проекта, построй ресурсный график и найди точку безубыточности за 5 минут.</p>
+                <a href="/calc" class="btn-primary">Перейти к расчетам →</a>
+            </div>
+            <div class="cta-box">
+                <h3>🏗 Инженерная прикидка</h3>
+                <p>Быстрая предпроектная оценка нагрузок, стоимости, сроков и пусконаладочных работ.</p>
+                <a href="/prikidka/" class="btn-primary">Прикинуть проект →</a>
+            </div>
         </div>
     </section>
 
