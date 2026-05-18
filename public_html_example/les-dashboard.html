@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Л.Е.С. Dashboard — AMSLRAG Machine</title>
+<style>
+/* ============================================================
+   OVC Design System Tokens (автономная копия)
+   ============================================================ */
+:root {
+  --bg-main:      #181b1f;
+  --bg-secondary: #22262c;
+  --bg-tertiary:  #14171a;
+  --text-main:    #dde1e7;
+  --text-muted:   #8a9099;
+  --text-dim:     #4a5260;
+  --border:       #2e333b;
+  --border-sub:   #232830;
+
+  /* Цвета подсайтов */
+  --c-rag:  #c29922;
+  --c-main: #2a629a;
+  --c-bim:  #178a99;
+  --c-toc:  #5a9c42;
+  --c-waf:  #b02a2a;
+  --c-fun:  #4a2180;
+
+  /* Цвета модулей Л.Е.С. */
+  --m-zhaba:   #d84315;
+  --m-samovar: #fbc02d;
+  --m-krot:    #29b6f6;
+  --m-sova:    #00e5ff;
+  --m-volk:    #1976d2;
+  --m-prorab:  #00e676;
+  --m-toska:   #e53935;
+  --m-kot:     #d500f9;
+  --m-ezhik:   #ffca28;
+
+  --font-code: 'Courier New', Courier, monospace;
+  --font-ui:   system-ui, -apple-system, sans-serif;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --ease: 200ms ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-code);
+  background: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar {
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 16px;
+}
+.topbar-brand {
+  font-size: .95rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  color: var(--c-rag);
+  flex-shrink: 0;
+}
+.topbar-brand span { color: var(--text-dim); font-weight: 400; }
+.topbar-status {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: .72rem;
+  color: var(--text-dim);
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot.on     { background: var(--c-toc); box-shadow: 0 0 6px var(--c-toc); animation: pulse 2s infinite; }
+.status-dot.off    { background: var(--text-dim); }
+.status-dot.warn   { background: var(--c-rag); box-shadow: 0 0 6px var(--c-rag); }
+@keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+
+.topbar-time {
+  font-size: .72rem;
+  color: var(--text-dim);
+  font-family: var(--font-code);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   LAYOUT: Sidebar + Main
+   ============================================================ */
+.app-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-section {
+  padding: 16px 0 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-section:last-child { border-bottom: none; flex: 1; }
+.sidebar-label {
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-dim);
+  padding: 0 16px 8px;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease);
+  font-size: .8rem;
+  color: var(--text-muted);
+  border-left: 2px solid transparent;
+  text-decoration: none;
+}
+.sidebar-item:hover { background: rgba(255,255,255,.03); color: var(--text-main); }
+.sidebar-item.active { color: var(--c-rag); border-left-color: var(--c-rag); background: rgba(194,153,34,.05); }
+.sidebar-item .mod-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sidebar-item .badge {
+  margin-left: auto;
+  font-size: .6rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+  opacity: .7;
+}
+
+/* ── Main Content ────────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Right Panel ─────────────────────────────────────────── */
+.right-panel {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ============================================================
+   КОМПОНЕНТЫ
+   ============================================================ */
+
+/* -- Заголовок секции -------------------------------------- */
+.section-title {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--c-rag);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+}
+
+/* -- Метрики KPI ------------------------------------------- */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.kpi-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent, var(--c-rag));
+}
+.kpi-label { font-size: .65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.kpi-value { font-size: 1.8rem; font-weight: 900; color: var(--accent, var(--c-rag)); line-height: 1; margin-bottom: 4px; }
+.kpi-sub   { font-size: .68rem; color: var(--text-muted); }
+
+/* -- Статус-карточки модулей ------------------------------- */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.module-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--ease), transform var(--ease);
+  cursor: default;
+}
+.module-card:hover { transform: translateY(-2px); border-color: var(--mod-color); }
+.module-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--mod-color, var(--c-rag));
+}
+.module-card::after {
+  content: var(--mod-ascii, "");
+  position: absolute;
+  right: 10px; bottom: 8px;
+  font-size: .7rem;
+  color: var(--mod-color);
+  opacity: .3;
+}
+.mod-name {
+  font-size: .72rem;
+  font-weight: 900;
+  color: var(--text-main);
+  margin-bottom: 3px;
+  letter-spacing: .02em;
+}
+.mod-role { font-size: .62rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.mod-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .65rem;
+}
+.mod-status .dot { width: 6px; height: 6px; border-radius: 50%; }
+.mod-status .dot.on   { background: var(--c-toc); box-shadow: 0 0 4px var(--c-toc); }
+.mod-status .dot.off  { background: var(--text-dim); }
+.mod-status .dot.warn { background: var(--c-rag); box-shadow: 0 0 4px var(--c-rag); }
+.mod-status .label { color: var(--text-muted); }
+.mod-bar {
+  margin-top: 8px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.mod-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--mod-color);
+  transition: width 1s ease;
+}
+
+/* -- Лог событий ------------------------------------------ */
+.log-box {
+  background: #000;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--c-rag);
+  border-radius: var(--r-md);
+  padding: 14px;
+  font-family: var(--font-code);
+  font-size: .72rem;
+  color: var(--c-rag);
+  max-height: 220px;
+  overflow-y: auto;
+  line-height: 1.8;
+}
+.log-box::-webkit-scrollbar { width: 4px; }
+.log-box::-webkit-scrollbar-track { background: #000; }
+.log-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.log-line { display: block; }
+.log-line .ts  { color: var(--text-dim); }
+.log-line .ok  { color: var(--c-toc); }
+.log-line .err { color: var(--c-waf); }
+.log-line .inf { color: var(--c-main); }
+.log-line .wrn { color: var(--c-rag); }
+.log-cursor { display: inline-block; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* -- ASCII схема ------------------------------------------- */
+.ascii-box {
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px;
+  font-family: var(--font-code);
+  font-size: .72rem;
+  color: var(--c-rag);
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.ascii-box .dim    { color: #2a3820; }
+.ascii-box .bright { color: #00e676; font-weight: 700; }
+.ascii-box .yell   { color: #fbc02d; }
+.ascii-box .blue   { color: #4da6ff; }
+.ascii-box .red    { color: #ff5252; }
+.ascii-box .cyan   { color: #00e5ff; }
+.ascii-box .pur    { color: #d500f9; }
+
+/* -- Правая панель ----------------------------------------- */
+.panel-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px;
+}
+.panel-card h4 {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+.panel-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-sub);
+  font-size: .75rem;
+}
+.panel-metric:last-child { border-bottom: none; }
+.panel-metric .key   { color: var(--text-muted); }
+.panel-metric .val   { color: var(--text-main); font-weight: 700; font-family: var(--font-code); }
+.panel-metric .val.ok  { color: var(--c-toc); }
+.panel-metric .val.err { color: var(--c-waf); }
+.panel-metric .val.wrn { color: var(--c-rag); }
+
+/* -- Кнопки ------------------------------------------------ */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  font-family: var(--font-code);
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--ease);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn:hover { border-color: var(--c-rag); color: var(--c-rag); }
+.btn.primary { background: var(--c-rag); border-color: var(--c-rag); color: #fff; }
+.btn.primary:hover { opacity: .85; }
+.btn.green { border-color: var(--c-toc); color: var(--c-toc); }
+.btn.green:hover { background: var(--c-toc); color: #fff; }
+
+/* -- Прогресс бар ----------------------------------------- */
+.progress-wrap { margin-top: 6px; }
+.progress-label { display: flex; justify-content: space-between; font-size: .65rem; color: var(--text-dim); margin-bottom: 4px; }
+.progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; background: var(--c-toc); transition: width 1.2s ease; }
+.progress-fill.warn { background: var(--c-rag); }
+
+/* -- Активный фрейм --------------------------------------- */
+#active-view { display: flex; flex-direction: column; gap: 20px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1100px) {
+  .right-panel { display: none; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px) {
+  .sidebar { display: none; }
+  .modules-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-brand">Л.Е.С. <span>/ AMSLRAG Machine Dashboard</span></div>
+  <div class="topbar-status">
+    <span class="status-dot on"></span> Система активна
+    &nbsp;·&nbsp;
+    <span class="status-dot on"></span> САМОВАР online
+    &nbsp;·&nbsp;
+    <span class="status-dot warn"></span> К.Р.О.Т. индексация
+    &nbsp;·&nbsp;
+    <span class="status-dot off"></span> В.О.Л.К. standby
+  </div>
+  <div class="topbar-time" id="clock">—</div>
+</header>
+
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Навигация</div>
+      <a class="sidebar-item active" onclick="showView('overview')">
+        <span class="mod-dot" style="background:var(--c-rag)"></span> Обзор
+      </a>
+      <a class="sidebar-item" onclick="showView('modules')">
+        <span class="mod-dot" style="background:var(--c-toc)"></span> Модули
+      </a>
+      <a class="sidebar-item" onclick="showView('pipeline')">
+        <span class="mod-dot" style="background:var(--c-bim)"></span> Пайплайн
+      </a>
+      <a class="sidebar-item" onclick="showView('log')">
+        <span class="mod-dot" style="background:var(--text-dim)"></span> Журнал
+        <span class="badge" style="color:var(--c-rag)">3</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Модули</div>
+      <a class="sidebar-item" onclick="highlightModule('zhaba')">
+        <span class="mod-dot" style="background:var(--m-zhaba)"></span> Ж.А.Б.А.
+        <span class="badge" style="color:var(--c-toc)">ON</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('samovar')">
+        <span class="mod-dot" style="background:var(--m-samovar)"></span> С.А.М.О.В.А.Р.
+        <span class="badge" style="color:var(--c-toc)">ON</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('krot')">
+        <span class="mod-dot" style="background:var(--m-krot)"></span> К.Р.О.Т.
+        <span class="badge" style="color:var(--c-rag)">IDX</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('sova')">
+        <span class="mod-dot" style="background:var(--m-sova)"></span> С.О.В.У.Ш.К.А.
+        <span class="badge" style="color:var(--c-toc)">ON</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('volk')">
+        <span class="mod-dot" style="background:var(--m-volk)"></span> В.О.Л.К.
+        <span class="badge" style="color:var(--text-dim)">SBY</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('prorab')">
+        <span class="mod-dot" style="background:var(--m-prorab)"></span> П.Р.О.Р.А.Б.
+        <span class="badge" style="color:var(--c-toc)">ON</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('toska')">
+        <span class="mod-dot" style="background:var(--m-toska)"></span> Т.О.С.К.А.
+        <span class="badge" style="color:var(--c-toc)">ON</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('kot')">
+        <span class="mod-dot" style="background:var(--m-kot)"></span> К.О.Т.
+        <span class="badge" style="color:var(--c-toc)">ON</span>
+      </a>
+      <a class="sidebar-item" onclick="highlightModule('ezhik')">
+        <span class="mod-dot" style="background:var(--m-ezhik)"></span> Е.Ж.И.К.
+        <span class="badge" style="color:var(--c-toc)">ON</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Ссылки</div>
+      <a class="sidebar-item" href="/les.php">
+        <span class="mod-dot" style="background:var(--text-dim)"></span> Паспорт Л.Е.С.
+      </a>
+      <a class="sidebar-item" href="/index.php">
+        <span class="mod-dot" style="background:var(--text-dim)"></span> RAG подсайт
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div id="active-view">
+
+      <!-- KPI -->
+      <div>
+        <div class="section-title">Системные метрики</div>
+        <div class="kpi-row">
+          <div class="kpi-card" style="--accent:var(--c-rag)">
+            <div class="kpi-label">Документов</div>
+            <div class="kpi-value">2 847</div>
+            <div class="kpi-sub">в векторной БД</div>
+          </div>
+          <div class="kpi-card" style="--accent:var(--c-toc)">
+            <div class="kpi-label">Запросов / день</div>
+            <div class="kpi-value">143</div>
+            <div class="kpi-sub">↑ 12% к пн</div>
+          </div>
+          <div class="kpi-card" style="--accent:var(--c-bim)">
+            <div class="kpi-label">Точность ответов</div>
+            <div class="kpi-value">94%</div>
+            <div class="kpi-sub">Т.О.С.К.А. фильтр</div>
+          </div>
+          <div class="kpi-card" style="--accent:var(--c-main)">
+            <div class="kpi-label">Uptime</div>
+            <div class="kpi-value">99.7</div>
+            <div class="kpi-sub">% за 30 дней</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Модули -->
+      <div>
+        <div class="section-title">Статус модулей</div>
+        <div class="modules-grid">
+
+          <div class="module-card" style="--mod-color:var(--m-zhaba);--mod-ascii:'[###]'">
+            <div class="mod-name">Ж.А.Б.А.</div>
+            <div class="mod-role">АППАРАТНАЯ БАЗА</div>
+            <div class="mod-status"><span class="dot on"></span><span class="label">Активна · 34°C</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:72%"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-samovar);--mod-ascii:'(~~~)'">
+            <div class="mod-name">С.А.М.О.В.А.Р.</div>
+            <div class="mod-role">ГЕНЕРАЦИЯ / RAG CORE</div>
+            <div class="mod-status"><span class="dot on"></span><span class="label">Ollama · qwen2.5:14b</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:58%"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-krot);--mod-ascii:'[X,Y,Z]'">
+            <div class="mod-name">К.Р.О.Т.</div>
+            <div class="mod-role">BIM / ЧЕРТЕЖИ</div>
+            <div class="mod-status"><span class="dot warn"></span><span class="label">Индексация IFC...</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:38%;background:var(--c-rag)"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-sova);--mod-ascii:'[O_O]'">
+            <div class="mod-name">С.О.В.У.Ш.К.А.</div>
+            <div class="mod-role">ИНТЕРФЕЙС</div>
+            <div class="mod-status"><span class="dot on"></span><span class="label">Open WebUI · 8080</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:20%"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-volk);--mod-ascii:'||::||'">
+            <div class="mod-name">В.О.Л.К.</div>
+            <div class="mod-role">ПЕРИМЕТР / FIREWALL</div>
+            <div class="mod-status"><span class="dot off"></span><span class="label">Standby · 0 угроз</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:5%;background:var(--text-dim)"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-prorab);--mod-ascii:'root@les'">
+            <div class="mod-name">П.Р.О.Р.А.Б.</div>
+            <div class="mod-role">МОНИТОРИНГ</div>
+            <div class="mod-status"><span class="dot on"></span><span class="label">Все узлы в норме</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:100%;background:var(--m-prorab)"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-toska);--mod-ascii:'>||<'">
+            <div class="mod-name">Т.О.С.К.А.</div>
+            <div class="mod-role">ВАЛИДАЦИЯ / ФИЛЬТР</div>
+            <div class="mod-status"><span class="dot on"></span><span class="label">Отфильтровано: 23</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:88%;background:var(--m-toska)"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-kot);--mod-ascii:'</>'">
+            <div class="mod-name">К.О.Т.</div>
+            <div class="mod-role">ТЕРМИНОЛОГИЯ</div>
+            <div class="mod-status"><span class="dot on"></span><span class="label">Словарь: 4 200 ед.</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:95%;background:var(--m-kot)"></div></div>
+          </div>
+
+          <div class="module-card" style="--mod-color:var(--m-ezhik);--mod-ascii:'[\@/]'">
+            <div class="mod-name">Е.Ж.И.К.</div>
+            <div class="mod-role">ПОЧТА / КОЛЛЕКТОР</div>
+            <div class="mod-status"><span class="dot on"></span><span class="label">Получено: 7 сегодня</span></div>
+            <div class="mod-bar"><div class="mod-bar-fill" style="width:42%;background:var(--m-ezhik)"></div></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Схема + Лог -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+        <!-- ASCII Схема -->
+        <div>
+          <div class="section-title">Схема связей</div>
+          <div class="ascii-box"><pre>
+<span class="dim">┌──────────────────────────────────────┐</span>
+<span class="dim">│</span>     <span class="bright">Л.Е.С. · AMSLRAG Machine</span>       <span class="dim">│</span>
+<span class="dim">├──────────────────────────────────────┤</span>
+<span class="dim">│</span>                                      <span class="dim">│</span>
+<span class="dim">│</span> [<span class="yell">Е.Ж.И.К.</span>]──→[<span class="cyan">С.О.В.У.Ш.К.А.</span>]←инж.  <span class="dim">│</span>
+<span class="dim">│</span>      ↓              ↓               <span class="dim">│</span>
+<span class="dim">│</span>   почта   [<span class="red">Т.О.С.К.А.</span>] фильтр       <span class="dim">│</span>
+<span class="dim">│</span>      ↓              ↓               <span class="dim">│</span>
+<span class="dim">│</span> [<span class="bright">САМОВАР</span>]←──[<span class="blue">К.Р.О.Т.</span>]←── IFC    <span class="dim">│</span>
+<span class="dim">│</span>      ↑         RAG core            <span class="dim">│</span>
+<span class="dim">│</span> [<span class="red">Ж.А.Б.А.</span>] физ. кластер            <span class="dim">│</span>
+<span class="dim">│</span>      ↑                              <span class="dim">│</span>
+<span class="dim">│</span> [<span class="blue">В.О.Л.К.</span>] периметр               <span class="dim">│</span>
+<span class="dim">│</span> [<span class="bright">П.Р.О.Р.А.Б.</span>] мониторинг          <span class="dim">│</span>
+<span class="dim">│</span> [<span class="pur">К.О.Т.</span>] семантика                 <span class="dim">│</span>
+<span class="dim">│</span>                                      <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────┘</span></pre></div>
+        </div>
+
+        <!-- Журнал событий -->
+        <div>
+          <div class="section-title">Журнал событий</div>
+          <div class="log-box" id="log-output">
+            <span class="log-line"><span class="ts">[09:12:04]</span> <span class="ok">[OK]</span>  САМОВАР: индексация завершена</span>
+            <span class="log-line"><span class="ts">[09:14:22]</span> <span class="inf">[IN]</span>  Е.Ж.И.К.: получено 7 писем</span>
+            <span class="log-line"><span class="ts">[09:15:03]</span> <span class="wrn">[WN]</span>  К.Р.О.Т.: IFC v2.3 не поддерживается</span>
+            <span class="log-line"><span class="ts">[09:16:41]</span> <span class="ok">[OK]</span>  Т.О.С.К.А.: отфильтровано 23 галл.</span>
+            <span class="log-line"><span class="ts">[09:18:07]</span> <span class="inf">[IN]</span>  СОВУШКА: запрос «СП 52.13330»</span>
+            <span class="log-line"><span class="ts">[09:19:55]</span> <span class="ok">[OK]</span>  САМОВАР: ответ сформирован 1.2s</span>
+            <span class="log-line"><span class="ts">[09:22:11]</span> <span class="inf">[IN]</span>  К.О.Т.: замена 3 терминов</span>
+            <span class="log-line"><span class="ts">[09:25:33]</span> <span class="ok">[OK]</span>  П.Р.О.Р.А.Б.: все 9 модулей OK</span>
+            <span class="log-line"><span class="ts" id="last-ts">[09:27:49]</span> <span class="ok">[OK]</span>  root@les:~# <span class="log-cursor">█</span></span>
+          </div>
+
+          <!-- Кнопки управления -->
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn primary" onclick="addLogLine()">▶ Запрос</button>
+            <button class="btn green" onclick="addIndexLine()">↻ Реиндекс</button>
+            <button class="btn" onclick="clearLog()">✕ Очистить</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Прогресс задач -->
+      <div>
+        <div class="section-title">Текущие задачи</div>
+        <div style="display:flex;flex-direction:column;gap:10px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:var(--r-md);padding:16px">
+          <div class="progress-wrap">
+            <div class="progress-label"><span>Индексация ГОСТ 21.101-2026</span><span style="color:var(--c-rag)">38%</span></div>
+            <div class="progress-bar"><div class="progress-fill warn" id="p1" style="width:38%"></div></div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-label"><span>Парсинг входящих ТЗ (7 файлов)</span><span style="color:var(--c-toc)">100%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="p2" style="width:100%"></div></div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-label"><span>Обновление словаря К.О.Т.</span><span style="color:var(--c-toc)">82%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="p3" style="width:82%"></div></div>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-label"><span>Qdrant синхронизация векторов</span><span style="color:var(--c-toc)">91%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="p4" style="width:91%"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /#active-view -->
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+
+    <div class="panel-card">
+      <h4>Железо (Ж.А.Б.А.)</h4>
+      <div class="panel-metric"><span class="key">CPU</span><span class="val ok">34%</span></div>
+      <div class="panel-metric"><span class="key">RAM</span><span class="val wrn">11.2 / 16 GB</span></div>
+      <div class="panel-metric"><span class="key">GPU VRAM</span><span class="val ok">8.1 / 12 GB</span></div>
+      <div class="panel-metric"><span class="key">Диск</span><span class="val">340 / 2 000 GB</span></div>
+      <div class="panel-metric"><span class="key">Temp</span><span class="val ok">34°C</span></div>
+      <div class="panel-metric"><span class="key">Uptime</span><span class="val">14д 7ч 22м</span></div>
+    </div>
+
+    <div class="panel-card">
+      <h4>Стек RAG</h4>
+      <div class="panel-metric"><span class="key">LLM</span><span class="val">qwen2.5:14b</span></div>
+      <div class="panel-metric"><span class="key">Embed</span><span class="val">nomic-embed</span></div>
+      <div class="panel-metric"><span class="key">Vector DB</span><span class="val ok">Qdrant :6333</span></div>
+      <div class="panel-metric"><span class="key">UI</span><span class="val ok">Open WebUI</span></div>
+      <div class="panel-metric"><span class="key">Docs</span><span class="val">2 847</span></div>
+      <div class="panel-metric"><span class="key">Чанков</span><span class="val">18 429</span></div>
+    </div>
+
+    <div class="panel-card">
+      <h4>Безопасность (В.О.Л.К.)</h4>
+      <div class="panel-metric"><span class="key">Firewall</span><span class="val">Standby</span></div>
+      <div class="panel-metric"><span class="key">Внеш. запросы</span><span class="val ok">0 / 0</span></div>
+      <div class="panel-metric"><span class="key">Изоляция</span><span class="val ok">Полная</span></div>
+      <div class="panel-metric"><span class="key">VPN out</span><span class="val ok">Отключён</span></div>
+      <div class="panel-metric"><span class="key">Утечек данных</span><span class="val ok">0</span></div>
+    </div>
+
+    <div class="panel-card">
+      <h4>Быстрый запрос</h4>
+      <textarea id="quick-query" style="width:100%;height:60px;background:var(--bg-main);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text-main);font-family:var(--font-code);font-size:.72rem;padding:8px;resize:none;outline:none" placeholder="Задай вопрос системе..."></textarea>
+      <button class="btn primary" style="width:100%;margin-top:6px;justify-content:center" onclick="sendQuery()">▶ Отправить</button>
+      <div id="query-result" style="display:none;margin-top:8px;padding:8px;background:var(--bg-main);border:1px solid var(--border);border-radius:var(--r-sm);font-size:.72rem;color:var(--c-rag);max-height:120px;overflow-y:auto"></div>
+    </div>
+
+  </aside>
+
+</div><!-- /.app-layout -->
+
+<script>
+// ── Часы ────────────────────────────────────────────────────
+function updateClock() {
+  var now = new Date();
+  var pad = function(n){ return String(n).padStart(2,'0'); };
+  document.getElementById('clock').textContent =
+    pad(now.getDate())+'.'+pad(now.getMonth()+1)+'.'+now.getFullYear() +
+    '  ' + pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ── Лог ─────────────────────────────────────────────────────
+var logLines = [
+  'САМОВАР: выполнен запрос за 0.9s',
+  'Т.О.С.К.А.: галлюцинаций не обнаружено',
+  'Е.Ж.И.К.: обработано вложение ТЗ.pdf',
+  'К.О.Т.: нормализован 1 термин',
+  'П.Р.О.Р.А.Б.: плановая проверка ОК',
+  'СОВУШКА: новый сеанс открыт',
+  'К.Р.О.Т.: найдена коллизия в IFC модели',
+];
+function ts() {
+  var n=new Date();
+  return '['+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0')+']';
+}
+function addLogLine() {
+  var box = document.getElementById('log-output');
+  var line = logLines[Math.floor(Math.random()*logLines.length)];
+  var cls = line.includes('коллиз') || line.includes('ошибк') ? 'err' : 'ok';
+  box.innerHTML += '<span class="log-line"><span class="ts">'+ts()+'</span> <span class="'+cls+'">[OK]</span>  '+line+'</span>\n';
+  box.scrollTop = box.scrollHeight;
+}
+function addIndexLine() {
+  var box = document.getElementById('log-output');
+  box.innerHTML += '<span class="log-line"><span class="ts">'+ts()+'</span> <span class="inf">[IN]</span>  К.Р.О.Т.: запуск реиндексации нормативов...</span>\n';
+  box.scrollTop = box.scrollHeight;
+  var p1 = document.getElementById('p1');
+  if (p1) {
+    p1.style.width='0%';
+    setTimeout(function(){ p1.style.width='100%'; }, 100);
+    setTimeout(function(){
+      var box2 = document.getElementById('log-output');
+      box2.innerHTML += '<span class="log-line"><span class="ts">'+ts()+'</span> <span class="ok">[OK]</span>  К.Р.О.Т.: реиндексация завершена</span>\n';
+      box2.scrollTop = box2.scrollHeight;
+    }, 1500);
+  }
+}
+function clearLog() {
+  document.getElementById('log-output').innerHTML = '<span class="log-line"><span class="ts">'+ts()+'</span> <span class="ok">[OK]</span>  root@les:~# <span class="log-cursor">█</span></span>';
+}
+
+// ── Быстрый запрос (симуляция) ──────────────────────────────
+var answers = [
+  'СП 60.13330.2020 — «Отопление, вентиляция и кондиционирование воздуха». Актуальная редакция.',
+  'IFC (Industry Foundation Classes) — открытый стандарт обмена данными BIM-моделей. Разрабатывается buildingSMART.',
+  'Температурный режим серверной: не выше +25°C при влажности 40-60%. Охлаждение — прецизионные кондиционеры.',
+  'ГОСТ 21.101-2026 регламентирует основные требования к проектной документации. Введён с 01.01.2027.',
+  'RAG (Retrieval-Augmented Generation) — метод улучшения качества ответов LLM за счёт поиска в базе знаний перед генерацией.',
+];
+function sendQuery() {
+  var q = document.getElementById('quick-query').value.trim();
+  var res = document.getElementById('query-result');
+  if (!q) return;
+  res.style.display = 'block';
+  res.textContent = '⏳ САМОВАР обрабатывает запрос...';
+  setTimeout(function(){
+    res.textContent = '◈ ' + answers[Math.floor(Math.random()*answers.length)];
+  }, 900 + Math.random()*600);
+  document.getElementById('quick-query').value = '';
+}
+document.getElementById('quick-query').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuery(); }
+});
+
+// ── Навигация по видам ──────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.sidebar-item').forEach(function(el){ el.classList.remove('active'); });
+  event && event.target && event.target.classList.add('active');
+}
+function highlightModule(name) {
+  document.querySelectorAll('.module-card').forEach(function(c){ c.style.outline='none'; });
+  var colors = {
+    zhaba:'var(--m-zhaba)',samovar:'var(--m-samovar)',krot:'var(--m-krot)',
+    sova:'var(--m-sova)',volk:'var(--m-volk)',prorab:'var(--m-prorab)',
+    toska:'var(--m-toska)',kot:'var(--m-kot)',ezhik:'var(--m-ezhik)'
+  };
+  var idx = {zhaba:0,samovar:1,krot:2,sova:3,volk:4,prorab:5,toska:6,kot:7,ezhik:8};
+  var cards = document.querySelectorAll('.module-card');
+  if (cards[idx[name]]) {
+    cards[idx[name]].style.outline = '2px solid ' + (colors[name]||'var(--c-rag)');
+    cards[idx[name]].scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+// ── Анимация прогресс-баров при загрузке ────────────────────
+window.addEventListener('load', function(){
+  var bars = document.querySelectorAll('.mod-bar-fill, .progress-fill');
+  bars.forEach(function(b){ var w=b.style.width; b.style.width='0'; setTimeout(function(){ b.style.width=w; }, 300); });
+  // Авто-лог
+  setInterval(addLogLine, 8000);
+});
+</script>
+</body>
+</html>

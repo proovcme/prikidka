@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "title": "RAG & Базы знаний: ИИ который знает нормативы | WeAreFired",
+    "description": "Строим системы которые отвечают строго по документации. Нормативы, СП, ГОСТ, каталоги — всё в базе знаний.",
+    "canonical": "https://rag.ovc.me/"
+  },
+  "hero": {
+    "title_line1": "RAG & Базы знаний:",
+    "title_line2": "ИИ который знает нормативы",
+    "subtitle": "Retrieval-Augmented Generation для инженеров",
+    "description": "Строим системы которые отвечают строго по документации. Нормативы, СП, ГОСТ, каталоги — всё в базе знаний."
+  },
+  "sections": [
+    {
+      "id": "theory",
+      "type": "dev_grid",
+      "title": "Теория",
+      "visible": true,
+      "cards": [
+        {
+          "tag": "BASICS",
+          "title": "RAG для чайников",
+          "desc": "Как научить ИИ читать ГОСТы и отвечать по твоим документам",
+          "url": "/rag-simple",
+          "color_class": "c-rag"
+        },
+        {
+          "tag": "OKN",
+          "title": "RAG для памятников архитектуры",
+          "desc": "Доклад БИМАК 2026: оцифровка, Vision LLM и экономика локального ИИ",
+          "url": "/rag-okn",
+          "color_class": "c-rag"
+        },
+        {
+          "tag": "CRAG",
+          "title": "Corrective RAG",
+          "desc": "Самокоррекция ИИ и фильтрация галлюцинаций до выдачи",
+          "url": "/crag",
+          "color_class": "c-bim"
+        },
+        {
+          "tag": "SAFE",
+          "title": "Safe-RAG",
+          "desc": "Безопасная генерация, защита от инъекций и PII masking",
+          "url": "/safe-rag",
+          "color_class": "c-waf"
+        }
+      ]
+    },
+    {
+      "id": "les_tool",
+      "type": "tool_box",
+      "title": "Система",
+      "visible": true,
+      "content": {
+        "headline": "Л.Е.С. — Локальная Экспертная Система",
+        "version": "AMSLRAG Machine",
+        "desc": "Закрытая корпоративная сеть и автономная среда. Маршрутизация данных внутри внутренних баз, физическая изоляция от внешнего интернета. Модули: Ж.А.Б.А., С.О.В.У.Ш.К.А., С.А.М.О.В.А.Р., Т.О.С.К.А.",
+        "url": "/les",
+        "btn_text": "Открыть паспорт комплекса →"
+      }
+    },
+    {
+      "id": "practice",
+      "type": "dev_grid",
+      "title": "Практика",
+      "visible": true,
+      "cards": [
+        {
+          "tag": "INFRA",
+          "title": "Домашний сервер",
+          "desc": "Архитектура приватной инфраструктуры: Docker, ZeroTier, локальный ИИ",
+          "url": "/infra",
+          "color_class": "c-rag"
+        }
+      ]
+    }
+  ]
+}

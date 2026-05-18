@@ -1,0 +1,7 @@
+db.php
+db_config.php
+config.php
+*.local.php
+projects/*.json
+.DS_Store
+index copy 1.php

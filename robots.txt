@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+Disallow: /cgi-bin/
+Disallow: /db.php
+Disallow: /db_config.php
+Disallow: /api_save.php
+Disallow: /api_gantt.php
+Disallow: /api_chat.php
+Disallow: /api_update_task.php
+Disallow: /api_update_input.php
+Disallow: /api_upload_csv.php
+Disallow: /data.json
+Disallow: /database.sql
+Disallow: /seed.sql
+Disallow: /.htaccess
+
+Sitemap: https://toc.chernetchenko.pro/sitemap.xml

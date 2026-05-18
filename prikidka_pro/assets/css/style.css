@@ -1,0 +1,226 @@
+:root {
+    --c-toc: #4CAF50; /* Зеленый акцент для ТОС */
+    --bg-secondary: #f5f5f5; /* Фон карточек */
+    --bg-tertiary: #ffffff; /* Фон полей ввода */
+    --text-main: #333333; /* Основной текст */
+    --text-secondary: #666666;
+    --border-color: #dddddd;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e9e9e9;
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-tertiary);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    color: var(--c-toc);
+    border-bottom: 2px solid var(--c-toc);
+    padding-bottom: 10px;
+}
+
+/* Каскадный выбор */
+#cascade-select {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.select-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.select-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.select-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-main);
+}
+
+/* Карточка объекта */
+.card {
+    background-color: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 5px solid var(--c-toc);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: var(--c-toc);
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-main);
+    box-sizing: border-box;
+}
+
+/* Орбита систем */
+#systems-orbit {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.orbit-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.system-btn {
+    background-color: var(--c-toc);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.system-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* Модальное окно (Лаборатория) */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--bg-tertiary);
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+#lab-formulas ul {
+    list-style-type: none;
+    padding: 0;
+    background: var(--bg-secondary);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#lab-formulas li {
+    margin-bottom: 5px;
+    font-family: monospace;
+}
+
+.lab-inputs-container {
+    margin-top: 15px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.input-row label {
+    flex: 1;
+    min-width: 200px;
+}
+
+.input-row input {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-main);
+    width: 120px;
+}
+
+.source {
+    font-size: 12px;
+    color: var(--text-secondary);
+    width: 100%;
+    text-align: right;
+}
+
+.result-box {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--bg-secondary);
+    border-left: 5px solid var(--c-toc);
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+/* Дуальный режим */
+.cli-only, .mgmt-only {
+    font-weight: bold;
+}
+
+/* По умолчанию показываем CLI, скрываем MGMT (можно переключать классом на body) */
+body.mgmt-mode .cli-only { display: none; }
+body.mgmt-mode .mgmt-only { display: inline; }
+.cli-only { display: inline; }
+.mgmt-only { display: none; }

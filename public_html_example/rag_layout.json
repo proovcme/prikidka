@@ -1,0 +1,121 @@
+{
+    "meta": {
+        "site_id": "rag",
+        "title": "RAG & Данные — rag.ovc.me",
+        "description": "Практика RAG, CRAG, LRAG для инженеров. Нормативы в векторных базах, локальные LLM, комплекс Л.Е.С.",
+        "keywords": "RAG, CRAG, LRAG, векторная база, LLM, нормативы, BIM, локальный ИИ",
+        "canonical": "https://rag.ovc.me/"
+    },
+    "hero": {
+        "title_line1": "RAG, CRAG, LRAG",
+        "title_line2": "Данные без галлюцинаций.",
+        "subtitle": "rag.ovc.me · Практика работы с данными",
+        "description": "Retrieval-Augmented Generation для инженеров. Нормативы, СП, ГОСТы в векторных базах. Локальные LLM без утечки данных. От теории — к рабочим пайплайнам."
+    },
+    "nav_chips": [
+        {"id": "basics", "label": "Основы", "link": "#basics"},
+        {"id": "practice", "label": "Практика", "link": "#practice"},
+        {"id": "les", "label": "Л.Е.С.", "link": "#les"},
+        {"id": "articles", "label": "Статьи", "link": "#articles"}
+    ],
+    "sections": [
+        {
+            "id": "basics",
+            "type": "concept_grid",
+            "title": "Базовые знания",
+            "visible": true,
+            "cards": [
+                {
+                    "code": "RAG",
+                    "full": "Retrieval-Augmented Generation",
+                    "desc": "Модель не придумывает — она достаёт. Перед генерацией ответа LLM получает релевантные куски из базы знаний. Точность вместо галлюцинаций.",
+                    "color": "c-rag",
+                    "icon": "◈"
+                },
+                {
+                    "code": "CRAG",
+                    "full": "Corrective RAG",
+                    "desc": "RAG с самопроверкой. Система оценивает качество найденных документов: если ничего подходящего — обращается к веб или запасному источнику.",
+                    "color": "c-main",
+                    "icon": "◉"
+                },
+                {
+                    "code": "LRAG",
+                    "full": "Local RAG",
+                    "desc": "Всё происходит на вашем железе. Нет облаков, нет утечки данных. Ollama + Qdrant + ваши документы = корпоративный мозг без NDA-рисков.",
+                    "color": "c-bim",
+                    "icon": "◎"
+                },
+                {
+                    "code": "CHUNK",
+                    "full": "Chunking & Embedding",
+                    "desc": "Документ нарезается на куски (чанки), каждый превращается в вектор. Похожие смыслы — близкие точки в пространстве. Основа всего.",
+                    "color": "c-toc",
+                    "icon": "▦"
+                }
+            ]
+        },
+        {
+            "id": "practice",
+            "type": "stack_grid",
+            "title": "Практика — инженерный стек",
+            "visible": true,
+            "stacks": [
+                {
+                    "layer": "Модель",
+                    "tools": ["Ollama", "LM Studio", "OpenRouter"],
+                    "desc": "Локальная или облачная LLM. Для конфиденциальных данных — только локальная.",
+                    "cmd": "ollama run qwen2.5:14b",
+                    "color": "var(--c-rag)"
+                },
+                {
+                    "layer": "Векторная БД",
+                    "tools": ["Qdrant", "Chroma", "PGVector"],
+                    "desc": "Хранит эмбеддинги. Qdrant — рекомендация для продакшна, Chroma — для старта.",
+                    "cmd": "docker run -p 6333:6333 qdrant/qdrant",
+                    "color": "var(--c-main)"
+                },
+                {
+                    "layer": "Документы",
+                    "tools": ["СП, ГОСТ, ФЗ", "PDF, DOCX, IFC", "Регламенты"],
+                    "desc": "Нормативная база, проектная документация, внутренние регламенты. Никуда не уходят.",
+                    "cmd": "python ingest.py --src ./norms/",
+                    "color": "var(--c-bim)"
+                },
+                {
+                    "layer": "Интерфейс",
+                    "tools": ["Open WebUI", "Chainlit", "API"],
+                    "desc": "Как инженер общается с системой. Веб-интерфейс, чат-бот, Revit-плагин, API.",
+                    "cmd": "docker run open-webui",
+                    "color": "var(--c-toc)"
+                }
+            ]
+        },
+        {
+            "id": "les",
+            "type": "les_box",
+            "title": "Комплекс Л.Е.С.",
+            "visible": true,
+            "content": {
+                "headline": "AMSLRAG Machine",
+                "subtitle": "Локальная Единая Система",
+                "desc": "Закрытая корпоративная RAG-среда для инженерного департамента. Автономная сеть, которая работает с нормативами, моделями и проектной документацией внутри периметра.",
+                "url": "/les.php",
+                "btn_text": "Паспорт системы →",
+                "modules": ["Ж.А.Б.А.", "С.А.М.О.В.А.Р.", "К.Р.О.Т.", "С.О.В.У.Ш.К.А.", "В.О.Л.К.", "П.Р.О.Р.А.Б."]
+            }
+        },
+        {
+            "id": "articles",
+            "type": "cms_loop",
+            "title": "Статьи и практика",
+            "visible": true,
+            "cms_params": {
+                "site": "rag",
+                "section": "",
+                "include_drafts": false,
+                "limit": 0
+            }
+        }
+    ]
+}

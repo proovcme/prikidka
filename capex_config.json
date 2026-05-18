@@ -1,0 +1,11 @@
+[
+    { "name": "Autodesk Revit (лицензия)", "cost": 180000, "life": 3, "type": "software" },
+    { "name": "AutoCAD (лицензия)", "cost": 90000, "life": 3, "type": "software" },
+    { "name": "Navisworks (лицензия)", "cost": 120000, "life": 3, "type": "software" },
+    { "name": "Рабочая станция (ПК)", "cost": 150000, "life": 5, "type": "hardware" },
+    { "name": "Ноутбук проектировщика", "cost": 120000, "life": 4, "type": "hardware" },
+    { "name": "3D-сканер (аренда, мес)", "cost": 80000, "life": 1, "type": "rent" },
+    { "name": "Плоттер (покупка)", "cost": 200000, "life": 7, "type": "hardware" },
+    { "name": "Сервер/NAS (хранилище)", "cost": 250000, "life": 5, "type": "hardware" },
+    { "name": "MS Office (лицензия)", "cost": 15000, "life": 1, "type": "software" }
+]

@@ -1,0 +1,15 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# 1. Если запрашивается папка - ничего не делаем
+RewriteCond %{REQUEST_FILENAME} !-d
+# 2. Если запрашивается конкретный файл с расширением - ничего не делаем
+RewriteCond %{REQUEST_FILENAME} !-f
+# 3. ЕСЛИ физически существует такой файл с расширением .php...
+RewriteCond %{REQUEST_FILENAME}.php -f
+# 4. ...только тогда скрыто подменяем адрес
+RewriteRule ^(.*)$ $1.php [L]
+
+# Перехват ошибок
+ErrorDocument 404 /404.php
